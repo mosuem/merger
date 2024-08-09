@@ -141,8 +141,12 @@ Future<void> runProcess(
     arguments,
     workingDirectory: workingDirectory,
   );
+  print('stdout:');
   print(processResult.stdout);
-  print(processResult.stderr);
+  if ((processResult.stderr as String).isNotEmpty) {
+    print('stderr:');
+    print(processResult.stderr);
+  }
   print('==========');
 }
 
