@@ -22,6 +22,10 @@ Future<void> main(List<String> arguments) async {
       help: 'The name of the main branch on the input repo',
       defaultsTo: 'main',
     )
+    ..addOption(
+      'git-filter-repo',
+      help: 'Path to the git-filter-repo tool',
+    )
     ..addFlag(
       'help',
       abbr: 'h',
@@ -33,6 +37,7 @@ Future<void> main(List<String> arguments) async {
   String inputPath;
   String targetPath;
   String branchName;
+  String gitFilterRepo;
   try {
     var parsed = argParser.parse(arguments);
     if (parsed.flag('help')) {
@@ -44,6 +49,7 @@ Future<void> main(List<String> arguments) async {
     inputPath = parsed['input-path'] as String;
     targetPath = parsed['target-path'] as String;
     branchName = parsed['branch-name'] as String;
+    gitFilterRepo = parsed['git-filter-repo'] as String;
   } catch (e) {
     print(e);
     print('');
@@ -52,9 +58,17 @@ Future<void> main(List<String> arguments) async {
   }
 
   print('Rename to `pkgs/`');
-  await filterRepo(['--path-rename', ':pkgs/$input/'], inputPath);
+  await filterRepo(
+    ['--path-rename', ':pkgs/$input/'],
+    workingDirectory: inputPath,
+    gitFilterRepo: gitFilterRepo,
+  );
   print('Prefix tags');
-  await filterRepo(['--tag-rename', ':$input-'], inputPath);
+  await filterRepo(
+    ['--tag-rename', ':$input-'],
+    workingDirectory: inputPath,
+    gitFilterRepo: gitFilterRepo,
+  );
 
   print('Create branch at target');
   await runProcess(
@@ -116,13 +130,14 @@ Future<void> runProcess(
   print('==========');
 }
 
-Future<void> filterRepo(List<String> args, String workingDirectory) async {
+Future<void> filterRepo(
+  List<String> args, {
+  required String workingDirectory,
+  required String gitFilterRepo,
+}) async {
   await runProcess(
     'python3',
-    [
-      p.relative('/home/mosum/tools/git-filter-repo', from: workingDirectory),
-      ...args
-    ],
+    [p.relative(gitFilterRepo, from: workingDirectory), ...args],
     workingDirectory: workingDirectory,
   );
 }
