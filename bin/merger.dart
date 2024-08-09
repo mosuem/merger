@@ -105,11 +105,16 @@ Future<void> main(List<String> arguments) async {
     workingDirectory: targetPath,
   );
 
-// Disable squash-only in GitHub settings, and merge with a fast forward merge to the main branch, enable squash-only in GitHub settings.
-// Push tags to github
-// Follow up with a PR adding links to the top-level readme table.
-// Add a commit to https://github.com/dart-lang/graphs/ with it's readme pointing to this repo
-// Archive https://github.com/dart-lang/graphs/.
+  print('DONE!');
+  print('''
+Steps left to do:
+
+1. Disable squash-only in GitHub settings, and merge with a fast forward merge to the main branch, enable squash-only in GitHub settings.
+2. Push tags to github
+3. Follow up with a PR adding links to the top-level readme table.
+4. Add a commit to https://github.com/dart-lang/$input/ with it's readme pointing to the monorepo
+5. Archive https://github.com/dart-lang/$input/.
+''');
 }
 
 Future<void> runProcess(
