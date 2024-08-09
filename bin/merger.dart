@@ -27,6 +27,11 @@ Future<void> main(List<String> arguments) async {
       help: 'Path to the git-filter-repo tool',
     )
     ..addFlag(
+      'push',
+      help: 'Whether to push the branch to remote',
+      defaultsTo: true,
+    )
+    ..addFlag(
       'help',
       abbr: 'h',
       help: 'Prints usage info',
@@ -38,6 +43,7 @@ Future<void> main(List<String> arguments) async {
   String targetPath;
   String branchName;
   String gitFilterRepo;
+  bool push;
   try {
     var parsed = argParser.parse(arguments);
     if (parsed.flag('help')) {
@@ -50,6 +56,7 @@ Future<void> main(List<String> arguments) async {
     targetPath = parsed['target-path'] as String;
     branchName = parsed['branch-name'] as String;
     gitFilterRepo = parsed['git-filter-repo'] as String;
+    push = parsed.flag('push');
   } catch (e) {
     print(e);
     print('');
@@ -76,7 +83,7 @@ Future<void> main(List<String> arguments) async {
     ['checkout', '-b', 'merge-$input-package'],
     workingDirectory: targetPath,
   );
-  print('Create branch at target');
+  print('Add a remote for the local clone of the moving package');
   await runProcess(
     'git',
     ['remote', 'add', '${input}_package', inputPath],
@@ -87,6 +94,7 @@ Future<void> main(List<String> arguments) async {
     ['fetch', '${input}_package'],
     workingDirectory: targetPath,
   );
+  print('Merge branch into monorepo');
   await runProcess(
     'git',
     [
@@ -98,22 +106,25 @@ Future<void> main(List<String> arguments) async {
     ],
     workingDirectory: targetPath,
   );
-
-  await runProcess(
-    'git',
-    ['push', '--set-upstream', 'origin', 'merge-$input-package'],
-    workingDirectory: targetPath,
-  );
+  if (push) {
+    print('Push to remote');
+    await runProcess(
+      'git',
+      ['push', '--set-upstream', 'origin', 'merge-$input-package'],
+      workingDirectory: targetPath,
+    );
+  }
 
   print('DONE!');
   print('''
 Steps left to do:
 
-1. Disable squash-only in GitHub settings, and merge with a fast forward merge to the main branch, enable squash-only in GitHub settings.
-2. Push tags to github
-3. Follow up with a PR adding links to the top-level readme table.
-4. Add a commit to https://github.com/dart-lang/$input/ with it's readme pointing to the monorepo
-5. Archive https://github.com/dart-lang/$input/.
+${push ? '' : '- Run `git push --set-upstream origin merge-$input-package` in the monorepo directory'}
+- Disable squash-only in GitHub settings, and merge with a fast forward merge to the main branch, enable squash-only in GitHub settings.
+- Push tags to github
+- Follow up with a PR adding links to the top-level readme table.
+- Add a commit to https://github.com/dart-lang/$input/ with it's readme pointing to the monorepo
+- Archive https://github.com/dart-lang/$input/.
 ''');
 }
 
