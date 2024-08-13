@@ -11,7 +11,6 @@ on:
 
 # All permissions not specified are set to 'none'.
 permissions:
-  issues: write
   pull-requests: write
 
 jobs:
