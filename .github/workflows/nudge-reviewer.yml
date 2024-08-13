@@ -8,6 +8,7 @@ on:
   schedule:
     # Every day at 8am
     - cron: '0 8 * * *'
+  workflow_dispatch:
 
 # All permissions not specified are set to 'none'.
 permissions:
