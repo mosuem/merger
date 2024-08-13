@@ -89,6 +89,7 @@ Future<void> main(List<String> arguments) async {
     ['remote', 'add', '${input}_package', inputPath],
     workingDirectory: targetPath,
   );
+
   await runProcess(
     'git',
     ['fetch', '${input}_package'],
