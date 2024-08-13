@@ -119,6 +119,7 @@ Future<void> main(List<String> arguments) async {
   print('''
 Steps left to do:
 
+- Move and fix workflow files
 ${push ? '' : '- Run `git push --set-upstream origin merge-$input-package` in the monorepo directory'}
 - Disable squash-only in GitHub settings, and merge with a fast forward merge to the main branch, enable squash-only in GitHub settings.
 - Push tags to github
