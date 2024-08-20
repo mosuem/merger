@@ -77,6 +77,17 @@ Future<void> main(List<String> arguments) async {
     gitFilterRepo: gitFilterRepo,
   );
 
+  print('Replace issue references in commit messages');
+  final tempDirectory = await Directory.systemTemp.createTemp();
+  final regexFile = File(p.join(tempDirectory.path, 'expressions.txt'));
+  await regexFile.create();
+  await regexFile.writeAsString('regex:#(\\d)==>dart-lang/$input#\\1');
+  await filterRepo(
+    ['--replace-message', regexFile.path],
+    workingDirectory: inputPath,
+    gitFilterRepo: gitFilterRepo,
+  );
+
   print('Create branch at target');
   await runProcess(
     'git',
